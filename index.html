@@ -1,0 +1,1300 @@
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" href="pfp.png" type="image/x-icon">
+  <title>Gamebyte</title><script src="https://unpkg.com/htmx.org@1.9.2"></script><script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script><script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script><style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+  --primary: #ff4757;
+  --secondary: #5352ed;
+  --accent: #feca57;
+  --background: #2f3542;
+  --text: #f1f2f6;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Press Start 2P', cursive;
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  background-color: var(--background);
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    linear-gradient(0deg, transparent 24%, rgba(32, 255, 255, 0.05) 25%, rgba(32, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(32, 255, 255, 0.05) 75%, rgba(32, 255, 255, 0.05) 76%, transparent 77%, transparent),
+    linear-gradient(90deg, transparent 24%, rgba(32, 255, 255, 0.05) 25%, rgba(32, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(32, 255, 255, 0.05) 75%, rgba(32, 255, 255, 0.05) 76%, transparent 77%, transparent);
+  background-size: 50px 50px;
+  z-index: -1;
+  animation: backgroundScroll 20s linear infinite;
+}
+
+@keyframes backgroundScroll {
+  0% { background-position: 0 0; }
+  100% { background-position: 50px 50px; }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+h1 {
+  font-size: 2.5em;
+  color: var(--accent);
+  text-shadow: 4px 4px 0px var(--primary);
+  margin-bottom: 20px;
+  animation: glitch 1s linear infinite;
+}
+
+@keyframes glitch {
+  2%, 64% { transform: translate(2px,0) skew(0deg); }
+  4%, 60% { transform: translate(-2px,0) skew(0deg); }
+  62% { transform: translate(0,0) skew(5deg); }
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+}
+
+.panel {
+  background: linear-gradient(45deg, var(--secondary), var(--primary));
+  border: 4px solid var(--accent);
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 20px,
+    rgba(255, 255, 255, 0.1) 20px,
+    rgba(255, 255, 255, 0.1) 40px
+  );
+  animation: scan 5s linear infinite;
+}
+
+@keyframes scan {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(50%); }
+}
+
+.panel:hover {
+  transform: translateY(-10px) scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.panel h2 {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.icon {
+  font-size: 3em;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.progress-container {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  height: 30px;
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--primary));
+  width: 0;
+  transition: width 1s ease-out;
+  position: relative;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.8em;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5);
+}
+
+.cta {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: var(--accent);
+  color: var(--background);
+  text-decoration: none;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.cta:hover {
+  background-color: var(--primary);
+  transform: scale(1.1);
+}
+
+footer {
+  margin-top: 50px;
+  text-align: center;
+  font-size: 0.8em;
+}
+
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+  margin: 0 10px;
+  transition: color 0.3s ease;
+}
+
+footer a:hover {
+  color: var(--primary);
+}
+
+.pixel {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: var(--accent);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+  background-color: var(--background);
+  margin: 15% auto;
+  padding: 20px;
+  border: 4px solid var(--accent);
+  width: 80%;
+  max-width: 600px;
+  border-radius: 15px;
+  position: relative;
+}
+
+.close {
+  color: var(--accent);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--primary);
+}
+
+#xp-bar {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: 200px;
+  height: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+}
+
+#xp-progress {
+  height: 100%;
+  background-color: var(--primary);
+  width: 0;
+  transition: width 0.5s ease;
+}
+
+#level-display {
+  position: fixed;
+  top: 35px;
+  right: 10px;
+  color: var(--accent);
+  font-size: 1em;
+}
+
+.environment {
+  display: none;
+  background-color: var(--background);
+  border: 4px solid var(--accent);
+  border-radius: 15px;
+  padding: 20px;
+  margin-top: 40px;
+}
+
+.environment h2 {
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.environment-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.env-item {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.env-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+}
+
+.env-item h3 {
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.env-item p {
+  font-size: 0.8em;
+}
+
+#back-btn {
+  background-color: var(--accent);
+  color: var(--background);
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+  margin-top: 20px;
+}
+
+#back-btn:hover {
+  background-color: var(--primary);
+}
+
+#agent-builder {
+  background-color: var(--background);
+  border: 4px solid var(--accent);
+  border-radius: 15px;
+  padding: 20px;
+  margin-top: 40px;
+}
+
+#agent-builder h2 {
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+#agent-builder input, #agent-builder select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: var(--background);
+  border: 2px solid var(--accent);
+  color: var(--text);
+  font-family: 'Press Start 2P', cursive;
+}
+
+#agent-builder button {
+  background-color: var(--accent);
+  color: var(--background);
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+}
+
+#agent-builder button:hover {
+  background-color: var(--primary);
+}
+
+.chat-bubble {
+  position: fixed;
+  background-color: var(--accent);
+  color: var(--background);
+  padding: 15px;
+  border-radius: 20px;
+  max-width: 300px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  z-index: 1000;
+}
+
+.chat-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 20px;
+  border-width: 10px 10px 0;
+  border-style: solid;
+  border-color: var(--accent) transparent;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+.typewriter {
+  overflow: hidden;
+  border-right: .15em solid var(--primary);
+  white-space: nowrap;
+  margin: 0 auto;
+  letter-spacing: .15em;
+  animation: 
+    typing 3.5s steps(40, end),
+    blink-caret .75s step-end infinite;
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: var(--primary); }
+}
+
+#agent-list {
+  margin-top: 40px;
+}
+
+.agent-card {
+  background-color: var(--background);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.agent-card button {
+  background-color: var(--accent);
+  color: var(--background);
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.agent-card button:hover {
+  background-color: var(--primary);
+}
+
+#agent-details {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--background);
+  border: 4px solid var(--accent);
+  border-radius: 15px;
+  padding: 20px;
+  z-index: 1001;
+  max-width: 80%;
+  max-height: 80%;
+  overflow-y: auto;
+}
+
+#agent-details h2 {
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+#agent-details-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+#agent-avatar {
+  width: 100%;
+  height: 200px;
+  background-color: var(--secondary);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 5em;
+}
+
+#agent-stats {
+  display: grid;
+  gap: 10px;
+}
+
+.stat-bar {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  height: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-progress {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--primary));
+  width: 0;
+  transition: width 1s ease-out;
+}
+
+.mini-game {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--background);
+  border: 4px solid var(--accent);
+  border-radius: 15px;
+  padding: 20px;
+  z-index: 1002;
+}
+
+.mini-game h2 {
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+#mini-game-content {
+  text-align: center;
+}
+
+#mini-game-score {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+  
+  h1 {
+    font-size: 1.8em;
+  }
+
+  #agent-details-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* New styles for enhanced customization */
+.customization-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.customization-item {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.customization-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+}
+
+.customization-item h4 {
+  color: var(--accent);
+  margin-bottom: 5px;
+}
+
+.customization-item p {
+  font-size: 0.7em;
+}
+
+/* Styles for challenges and mini-games */
+.challenge-container {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.challenge-container h3 {
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.challenge-description {
+  font-size: 0.8em;
+  margin-bottom: 15px;
+}
+
+.challenge-options {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.challenge-option {
+  background-color: var(--secondary);
+  color: var(--text);
+  border: none;
+  padding: 10px 15px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.challenge-option:hover {
+  background-color: var(--primary);
+}
+
+/* Animation for liveliness */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* New styles for exploration and adventure */
+.exploration-map {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 20px;
+  position: relative;
+  height: 300px;
+}
+
+.map-node {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.map-node:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+.map-line {
+  position: absolute;
+  background-color: var(--accent);
+  height: 2px;
+  transform-origin: left center;
+}
+
+/* Styles for interactive game elements */
+.game-object {
+  position: absolute;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.game-object:hover {
+  transform: scale(1.1);
+}
+
+.collectible {
+  width: 30px;
+  height: 30px;
+  background-color: var(--accent);
+  border-radius: 50%;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.obstacle {
+  width: 40px;
+  height: 40px;
+  background-color: var(--primary);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+/* Enhanced agent container styles */
+.agent-container {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.agent-portrait {
+  width: 100px;
+  height: 100px;
+  background-color: var(--secondary);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  margin-bottom: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.agent-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.agent-info {
+  text-align: center;
+}
+
+.agent-name {
+  font-size: 1.2em;
+  color: var(--accent);
+  margin-bottom: 5px;
+}
+
+.agent-level {
+  font-size: 0.9em;
+  color: var(--text);
+}
+
+.agent-skills {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+.skill-icon {
+  width: 30px;
+  height: 30px;
+  background-color: var(--secondary);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8em;
+  color: var(--text);
+}
+
+/* HTMX specific styles */
+.htmx-indicator {
+  opacity: 0;
+  transition: opacity 500ms ease-in;
+}
+.htmx-request .htmx-indicator {
+  opacity: 1
+}
+.htmx-request.htmx-indicator {
+  opacity: 1
+}
+
+/* New adventure styles */
+.adventure-log {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 20px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.adventure-log h3 {
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.adventure-log p {
+  font-size: 0.8em;
+  margin-bottom: 5px;
+}
+
+.quest-board {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.quest-board h3 {
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.quest {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.quest:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+}
+
+.quest h4 {
+  color: var(--accent);
+  margin-bottom: 5px;
+}
+
+.quest p {
+  font-size: 0.8em;
+}
+
+/* Inventory styles */
+.inventory {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.inventory h3 {
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  gap: 10px;
+}
+
+.inventory-item {
+  width: 50px;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.inventory-item:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+/* Skill tree styles */
+.skill-tree {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.skill-tree h3 {
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.skill-tree-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.skill-branch {
+  flex: 1;
+  min-width: 200px;
+  margin: 10px;
+}
+
+.skill-node {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.skill-node:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+}
+
+.skill-node h4 {
+  color: var(--accent);
+  margin-bottom: 5px;
+}
+
+.skill-node p {
+  font-size: 0.8em;
+}
+
+/* Battle arena styles */
+.battle-arena {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.battle-arena h3 {
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.battle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.battle-character {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+  padding: 10px;
+  text-align: center;
+}
+
+.battle-character img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.battle-actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+.battle-action {
+  background-color: var(--secondary);
+  color: var(--text);
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.battle-action:hover {
+  background-color: var(--primary);
+}
+
+/* New styles for loading overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading-animation {
+  width: 80px;
+  height: 80px;
+  border: 8px solid var(--accent);
+  border-top: 8px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  color: var(--accent);
+  font-size: 1.2em;
+  margin-top: 20px;
+  text-align: center;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loading-overlay {
+  display: none; /* Ensure the overlay is displayed */
+  animation: fadeIn 2s; /* Optional: Add fade-in effect */
+  animation-duration: 120s; /* Keep the overlay visible for 2 minutes */
+}
+
+</style>
+</head>
+<body>
+<div class="loading-overlay">
+  <div class="loading-container">
+    <div class="loading-animation"></div>
+    <div class="loading-text">Creating your AI Agent...</div>
+  </div>
+</div>
+<div class="container">
+  <header>
+    <h1>GAMEBYTE - AI AGENT BUILDER</h1>
+    <p>Embark on an epic journey to create and train powerful AI agents!</p>
+  </header>
+  
+  <main class="dashboard">
+    <div class="panel pulse" hx-get="/skills" hx-target="#main-content" hx-swap="innerHTML" hx-trigger="click">
+      <h2>SKILLS</h2>
+      <div class="icon">🧠</div>
+      <div class="progress-container">
+        <div id="skills-progress" class="progress-bar" hx-get="/skills-progress" hx-trigger="load, every 5s" hx-swap="innerHTML"></div>
+        <div class="progress-text"><span id="skills-level" hx-get="/skills-level" hx-trigger="load, every 5s" hx-swap="innerHTML">0</span></div>
+      </div>
+      <p>Enhance your agent's abilities</p>
+    </div>
+    
+    <div class="panel pulse" hx-get="/persona" hx-target="#main-content" hx-swap="innerHTML" hx-trigger="click">
+      <h2>PERSONA</h2>
+      <div class="icon">😎</div>
+      <div class="progress-container">
+        <div id="persona-progress" class="progress-bar" hx-get="/persona-progress" hx-trigger="load, every 5s" hx-swap="innerHTML"></div>
+        <div class="progress-text"><span id="persona-level" hx-get="/persona-level" hx-trigger="load, every 5s" hx-swap="innerHTML">0</span></div>
+      </div>
+      <p>Shape your agent's personality</p>
+    </div>
+    
+    <div class="panel pulse" hx-get="/roles" hx-target="#main-content" hx-swap="innerHTML" hx-trigger="click">
+      <h2>ROLES</h2>
+      <div class="icon">🎭</div>
+      <div class="progress-container">
+        <div id="roles-progress" class="progress-bar" hx-get="/roles-progress" hx-trigger="load, every 5s" hx-swap="innerHTML"></div>
+        <div class="progress-text"><span id="roles-level" hx-get="/roles-level" hx-trigger="load, every 5s" hx-swap="innerHTML">0</span></div>
+      </div>
+      <p>Unlock new agent roles</p>
+    </div>
+    
+    <div class="panel pulse" hx-get="/training" hx-target="#main-content" hx-swap="innerHTML" hx-trigger="click"><h2>TRAINING</h2>
+      <div class="icon">🏋️</div>
+      <div class="progress-container">
+        <div id="training-progress" class="progress-bar" hx-get="/training-progress" hx-trigger="load, every 5s" hx-swap="innerHTML"></div>
+        <div class="progress-text"><span id="training-level" hx-get="/training-level" hx-trigger="load, every 5s" hx-swap="innerHTML">0</span></div>
+      </div>
+      <p>Level up in the training grounds</p>
+    </div>
+  </main>
+
+  <div id="main-content">
+    <!-- Content will be dynamically loaded here -->
+  </div>
+
+  <div id="agent-builder">
+    <h2>Build Your AI Agent</h2>
+    <form id="agent-form">
+      <input type="text" id="agent-name" name="agent-name" placeholder="Agent Name" required>
+      <select id="agent-role" name="agent-role" required>
+        <option value="">Select Role</option>
+        <option value="assistant">Assistant</option>
+        <option value="researcher">Warrior</option>
+        <option value="creative">Mage</option>
+        <option value="analyst">Analyst</option>
+      </select>
+      <input type="text" id="agent-specialty" name="agent-specialty" placeholder="Specialty (e.g., The Sword, Spells, Defense)" required>
+      <select id="agent-personality" name="agent-personality" required>
+        <option value="">Select Personality</option>
+        <option value="friendly">Friendly</option>
+        <option value="professional">Professional</option>
+        <option value="witty">Witty</option>
+        <option value="analytical">Analytical</option>
+      </select>
+      <select id="agent-learning-style" name="agent-learning-style" required>
+        <option value="">Select Learning Style</option>
+        <option value="quick">Quick Learner</option>
+        <option value="thorough">Thorough Learner</option>
+        <option value="practical">Practical Learner</option>
+        <option value="creative">Creative Learner</option>
+      </select>
+      <button type="submit">Create Agent</button>
+    </form>
+  </div>
+
+  <div id="agent-list">
+    <!-- Agent cards will be dynamically added here -->
+  </div>
+
+  <div class="adventure-log">
+    <h3>Adventure Log</h3>
+    <div id="adventure-entries" hx-get="/adventure-log" hx-trigger="load, every 10s" hx-swap="innerHTML">
+      <!-- Adventure log entries will be dynamically added here -->
+    </div>
+  </div>
+
+  <div class="quest-board">
+    <h3>Quest Board</h3>
+    <div id="available-quests" hx-get="/available-quests" hx-trigger="load, every 30s" hx-swap="innerHTML">
+      <!-- Available quests will be dynamically added here -->
+    </div>
+  </div>
+
+  <div class="inventory">
+    <h3>Inventory</h3>
+    <div class="inventory-grid" id="agent-inventory" hx-get="/agent-inventory" hx-trigger="load, every 5s" hx-swap="innerHTML">
+      <!-- Inventory items will be dynamically added here -->
+    </div>
+  </div>
+
+  <div class="skill-tree">
+    <h3>Skill Tree</h3>
+    <div class="skill-tree-container" id="agent-skill-tree" hx-get="/agent-skill-tree" hx-trigger="load" hx-swap="innerHTML">
+      <!-- Skill tree will be dynamically loaded here -->
+    </div>
+  </div>
+
+  <div class="battle-arena">
+    <h3>Battle Arena</h3>
+    <div class="battle-grid" id="battle-arena" hx-get="/battle-arena" hx-trigger="load" hx-swap="innerHTML">
+      <!-- Battle arena content will be dynamically loaded here -->
+    </div>
+  </div>
+
+  <div class="exploration-map">
+    <h3>Exploration Map</h3>
+    <div id="map-container" hx-get="/exploration-map" hx-trigger="load" hx-swap="innerHTML">
+      <!-- Exploration map will be dynamically loaded here -->
+    </div>
+  </div>
+
+  <div id="agent-details" class="modal">
+    <div class="modal-content">
+      <span class="close">×</span>
+      <h2>Agent Details</h2>
+      <div id="agent-details-content">
+        <!-- Agent details will be dynamically loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <div class="mini-game" id="mini-game-container">
+    <h2>Mini-Game Challenge</h2>
+    <div id="mini-game-content">
+      <!-- Mini-game content will be dynamically loaded here -->
+    </div>
+  </div>
+
+  <div id="xp-bar">
+    <div id="xp-progress" hx-get="/xp-progress" hx-trigger="load, every 5s" hx-swap="innerHTML"></div>
+  </div>
+  <div id="level-display" hx-get="/level" hx-trigger="load, every 5s" hx-swap="innerHTML">Level: 1</div>
+
+  <footer>
+    <p>© 2024 Gamebyte | <a href="https://pump.fun">CA:</a> | <a href="https://x.com/gamebyte_ai">X</a></p>
+  </footer>
+</div>
+
+<script>
+  // HTMX is already included in the head, so we don't need to add it here
+
+  // Function to create pixel effect
+  function createPixel(e) {
+    const pixel = document.createElement('div');
+    pixel.classList.add('pixel');
+    pixel.style.left = `${e.pageX}px`;
+    pixel.style.top = `${e.pageY}px`;
+    document.body.appendChild(pixel);
+    setTimeout(() => {
+      pixel.remove();
+    }, 1000);
+  }
+
+  // Add pixel effect to the entire document
+  document.addEventListener('mousemove', createPixel);
+
+  // Function to open agent details modal
+  function openAgentDetails(agentId) {
+    const modal = document.getElementById('agent-details');
+    const content = document.getElementById('agent-details-content');
+    content.innerHTML = '<p>Loading agent details...</p>';
+    modal.style.display = 'block';
+    htmx.ajax('GET', `/agent-details/${agentId}`, '#agent-details-content');
+  }
+
+  // Function to close agent details modal
+  function closeAgentDetails() {
+    const modal = document.getElementById('agent-details');
+    modal.style.display = 'none';
+  }
+
+  // Add event listener to close button
+  document.querySelector('.close').addEventListener('click', closeAgentDetails);
+
+  // Function to start a mini-game
+  function startMiniGame(gameType) {
+    const gameContainer = document.getElementById('mini-game-container');
+    const gameContent = document.getElementById('mini-game-content');
+    gameContent.innerHTML = '<p>Loading mini-game...</p>';
+    gameContainer.style.display = 'block';
+    htmx.ajax('GET', `/mini-game/${gameType}`, '#mini-game-content');
+  }
+
+  // Function to update XP bar
+  function updateXPBar(xp, maxXP) {
+    const xpBar = document.getElementById('xp-progress');
+    const percentage = (xp / maxXP) * 100;
+    xpBar.style.width = `${percentage}%`;
+  }
+
+  // Function to update level display
+  function updateLevel(level) {
+    const levelDisplay = document.getElementById('level-display');
+    levelDisplay.textContent = `Level: ${level}`;
+  }
+
+  // Event delegation for dynamically created elements
+  document.addEventListener('click', function(event) {
+    if (event.target.matches('.agent-card button')) {
+      const agentId = event.target.getAttribute('data-agent-id');
+      openAgentDetails(agentId);
+    } else if (event.target.matches('.challenge-option')) {
+      const challengeType = event.target.getAttribute('data-challenge-type');
+      startMiniGame(challengeType);
+    }
+  });
+
+  // Initialize the application
+  document.addEventListener('DOMContentLoaded', function() {
+    // Load initial data
+    htmx.ajax('GET', '/skills-progress', '#skills-progress');
+    htmx.ajax('GET', '/skills-level', '#skills-level');
+    htmx.ajax('GET', '/persona-progress', '#persona-progress');
+    htmx.ajax('GET', '/persona-level', '#persona-level');
+    htmx.ajax('GET', '/roles-progress', '#roles-progress');
+    htmx.ajax('GET', '/roles-level', '#roles-level');
+    htmx.ajax('GET', '/training-progress', '#training-progress');
+    htmx.ajax('GET', '/training-level', '#training-level');
+    htmx.ajax('GET', '/xp-progress', '#xp-progress');
+    htmx.ajax('GET', '/level', '#level-display');
+    
+    // Set up periodic updates
+    setInterval(() => {
+      htmx.ajax('GET', '/adventure-log', '#adventure-entries');
+      htmx.ajax('GET', '/available-quests', '#available-quests');
+      htmx.ajax('GET', '/agent-inventory', '#agent-inventory');
+    }, 10000);
+  });
+
+  document.querySelector('#agent-form button[type="submit"]').setAttribute('hx-post', '/create-agent');
+  document.querySelector('#agent-form button[type="submit"]').setAttribute('hx-target', 'body');
+  document.querySelector('#agent-form button[type="submit"]').setAttribute('hx-swap', 'outerHTML');
+  document.querySelector('#agent-form button[type="submit"]').setAttribute('hx-push-url', '/agent-dashboard');
+
+  document.addEventListener('htmx:beforeRequest', function(event) {
+    if (event.detail.requestConfig.path === '/create-agent') {
+      document.querySelector('.loading-overlay').style.display = 'flex';
+    }
+  });
+
+  document.addEventListener('htmx:afterRequest', function(event) {
+    if (event.detail.requestConfig.path === '/create-agent') {
+      setTimeout(() => {
+        document.querySelector('.loading-overlay').style.display = 'none';
+      }, 120000); // 120 seconds
+    }
+  });
+
+  document.getElementById('agent-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    
+    document.querySelector('.loading-overlay').style.display = 'flex';
+    
+    setTimeout(() => {
+      htmx.ajax('POST', '/create-agent', {
+        target: 'body',
+        swap: 'outerHTML',
+        values: {
+          action: "create_agent",
+          name: formData.get('agent-name'),
+          base_persona: "Back country inventor with crazy coding skills",
+          initial_skills: ["Coding", "Inventing", "Problem Solving"],
+          training_focus: ["Rural Tech Innovation", "Algorithm Optimization"],
+          mood_baseline: 70
+        }
+      });
+    }, 1500);
+  });
+</script>
+</body>
+</html>
